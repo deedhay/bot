@@ -429,27 +429,6 @@ export default function EmbedBuilder() {
             <h2 className="text-xl font-semibold mb-6">Embed Settings</h2>
 
             <div className="space-y-6">
-              {/* Bot Info - Customize message sender */}
-              <div>
-                <h3 className="font-semibold mb-3">Bot Info (Message Sender)</h3>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    value={botInfo.name}
-                    onChange={(e) => setBotInfo({ ...botInfo, name: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-lg ${isDark ? "bg-black/50 border border-white/10" : "bg-white border border-black/10"}`}
-                    placeholder="Bot Name"
-                  />
-                  <input
-                    type="text"
-                    value={botInfo.avatar}
-                    onChange={(e) => setBotInfo({ ...botInfo, avatar: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-lg ${isDark ? "bg-black/50 border border-white/10" : "bg-white border border-black/10"}`}
-                    placeholder="Bot Avatar URL (image link)"
-                  />
-                </div>
-              </div>
-
               {/* Basic Settings */}
               <div>
                 <h3 className="font-semibold mb-3">Basic Settings</h3>
