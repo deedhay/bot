@@ -1,16 +1,17 @@
 "use client"
 
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useSiteConfig } from "@/lib/site-config"
 
 export default function DiscordRedirect() {
-  const router = useRouter()
+  const { config } = useSiteConfig()
 
   useEffect(() => {
-    // Redirect to Discord server
-    const discordServer = process.env.NEXT_PUBLIC_DISCORD_SERVER || "https://discord.gg/w5qKuKnGVp"
-    window.location.href = discordServer
-  }, [])
+    // Redirect to Discord server from config
+    if (config?.discordServerInvite) {
+      window.location.href = config.discordServerInvite
+    }
+  }, [config])
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
