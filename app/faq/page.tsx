@@ -4,6 +4,7 @@ import { useState } from "react"
 import Navigation from "../components/Navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { useSiteConfig } from "@/lib/site-config"
 
 interface FAQItem {
   question: string
@@ -13,59 +14,60 @@ interface FAQItem {
 export default function FAQPage() {
   const [isDark, setIsDark] = useState(true)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const { config } = useSiteConfig()
 
   const faqs: FAQItem[] = [
     {
       question: "How many commands does the bot have?",
-      answer: "As of right now, 270+ commands (including aliases, both slash and prefix commands combined).",
+      answer: "The bot has 611 commands across 30+ feature categories including moderation, leveling, giveaways, automation, and entertainment - all available as both slash commands and prefix commands for full flexibility",
+    },
+    {
+      question: "What are the main features?",
+      answer: "The bot includes AntiNuke (raid protection), AutoMod (spam/invite filtering), Leveling system with rank cards, Giveaways, Welcome/Leave messages, Tags, AFK status, Emojiboard, Server analytics, Role management, guild tag roles",
     },
     {
       question: "Is the bot open source?",
-      answer: "No, and I plan to keep it closed source for now.",
+      answer: "No, the bot is closed source. However, the website is open for customization and feedback.",
     },
     {
       question: "Support server link?",
-      answer: "https://discord.gg/w5qKuKnGVp",
+      answer: "Join our Discord server for support, bug reports, and feature requests. Link available in the Discord menu.",
     },
     {
       question: "How do I change the bot's prefix?",
-      answer: "Use /server prefixes add [prefix] or ?prefixes add [prefix] (requires Manage Server permission).",
+      answer: "Use prefixes add [prefix] to add custom prefixes. Requires Manage Server permission. You can have multiple prefixes active.",
     },
     {
       question: "Why isn't the bot responding to my commands?",
-      answer:
-        "Make sure the bot has proper permissions, you're using the correct prefix, and the command name is spelled correctly. Check /help for command info.",
+      answer: "Check that: 1) The bot has proper permissions in the channel, 2) You're using the correct prefix or slash command, 3) The command name is spelled correctly. Use /help to see all available commands.",
     },
     {
       question: "How do I report a bug or request a feature?",
-      answer: "Join our support server and create a ticket or post in the appropriate channel.",
+      answer: "Join the support server and simply ask. The developer actively reviews all suggestions.",
     },
     {
       question: "Does the bot store my messages?",
-      answer:
-        "The bot only stores message data for specific features like snipe commands (temporarily) and moderation logs. See our Privacy Policy for details.",
+      answer: "The bot stores minimal data: moderation logs (warnings, bans), temporary snipe data, server settings, and leveling stats. See Privacy Policy for full details.",
     },
     {
       question: "What permissions does the bot need?",
-      answer:
-        "The bot needs Administrator permission for full functionality, or specific permissions based on which features you want to use.",
+      answer: "The bot works best with Administrator permission for full functionality, but is not recommended, and giving it to this bot or any bot in general isn't recommended. For specific features, it needs: Manage Messages (for moderation), Manage Roles (for role assignment), Send Messages, Embed Links, and Attach Files.",
     },
     {
-      question: "Can I customize the bot's PFP/BANNER?",
-      answer: "Yes! Use ?customise pfp <icon_url> or ?customise banner <banner_url>.",
-    },
-    {
-      question: "Is the bot free to use?",
-      answer: "Yes, completely free with all features available.",
-    },
-    {
-      question: "How do I set up auto-moderation?",
-      answer: "Use /automod logchannel to set a log channel, then configure features like anti-spam, anti-raid, etc.",
+      question: "How do I set up AntiNuke protection?",
+      answer: "Use /antinuke logchannel to set a log channel, then configure /antinuke modules to enable protections like channel/role/webhook monitoring. Set punishment levels and whitelist trusted admins.",
     },
     {
       question: "What's the difference between ban, hardban, and softban?",
-      answer:
-        "Ban = Standard ban. Hardban = Only bot/server owner can unban. Softban = Ban then immediately unban to clear messages.",
+      answer: "Ban = Standard ban (can be unbanned). Hardban = Only bot owner can unban (permanent). Softban = Ban then immediately unban (used to clear user messages). Use /ban, /hardban, or /softban accordingly.",
+    },
+    {
+      question: "How does the leveling system work?",
+      answer: "Users gain XP from messages. Reach XP thresholds to level up. Configure role rewards at specific levels using /level. Rank cards display user level, XP progress, and server stats.",
+    },
+    {
+      question: "Is the bot free to use?",
+      answer: "Yes! All 611+ commands and features are completely free. No premium tiers or paywalls.",
     },
   ]
 
@@ -81,7 +83,7 @@ export default function FAQPage() {
         <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
           <h1 className="text-5xl font-bold mb-4">Frequently Asked Questions</h1>
           <p className={`text-lg ${isDark ? "text-gray-400" : "text-gray-600"} mb-12`}>
-            Find answers to common questions about Eris Bot
+            Find answers to common questions about {config.botName}
           </p>
         </motion.div>
 
