@@ -12,13 +12,8 @@ import * as Icons from "lucide-react"
 export default function Home() {
   const { data: session } = useSession()
   const { config, loading: configLoading } = useSiteConfig()
-  const [isDark, setIsDark] = useState(true)
   const [guilds, setGuilds] = useState<any[]>([])
   const [loadingGuilds, setLoadingGuilds] = useState(false)
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark)
-  }, [isDark])
 
   useEffect(() => {
     if (session) {
@@ -46,7 +41,7 @@ export default function Home() {
   return (
     <>
       <div className="min-h-screen relative overflow-hidden bg-gradient-radial from-[#1B1B1B] to-[#000000]">
-        {/* Animated background particles */}
+        <Navigation isDark={true} setIsDark={() => {}} />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(40)].map((_, i) => (
             <motion.div
@@ -71,8 +66,6 @@ export default function Home() {
 
         {/* Ambient glow overlay */}
         <div className="absolute inset-0 bg-gradient-radial from-[#CECECE]/5 via-transparent to-transparent pointer-events-none" />
-
-        <Navigation isDark={isDark} setIsDark={setIsDark} />
 
         {/* Main Hero */}
         <main className="relative max-w-6xl mx-auto px-4 py-20 min-h-screen flex flex-col items-center justify-center">
@@ -144,7 +137,7 @@ export default function Home() {
             </motion.div>
 
             {/* Feature Cards */}
-            <FeatureCards isDark={isDark} />
+            <FeatureCards isDark={true} />
 
             {/* Login or Guild List */}
             {!session ? (
@@ -188,13 +181,11 @@ export default function Home() {
                             title={guild.name}
                           />
                         ) : (
-                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold ${isDark ? "bg-gray-800" : "bg-gray-200"}`}>
+                          <div className="w-14 h-14 rounded-xl flex items-center justify-center font-bold bg-gray-800">
                             {guild.name[0]}
                           </div>
                         )}
-                        <div className={`absolute bottom-full mb-2 px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity ${
-                          isDark ? "bg-gray-800" : "bg-gray-200"
-                        }`}>
+                        <div className="absolute bottom-full mb-2 px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800">
                           {guild.name}
                         </div>
                       </motion.div>
