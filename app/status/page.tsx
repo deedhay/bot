@@ -52,8 +52,8 @@ export default function Status() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? "text-white" : "text-black"}`}>Bot Status</h1>
-          <p className={`text-lg mb-12 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Bot Status</h1>
+          <p className="text-lg mb-12 text-gray-400">
             Real-time statistics and bot health information
           </p>
         </motion.div>
