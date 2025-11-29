@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -5,7 +6,8 @@ import Navigation from "../components/Navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ALL_COMMANDS, Command } from "@/lib/commands-data";
 import { getCommandParent } from "@/lib/command-hierarchy";
-import CommandCategoryCard from "../components/CommandCategoryCard";
+import { CATEGORY_ICONS, CATEGORY_COLORS } from "@/lib/category-icons";
+import * as Icons from "lucide-react";
 
 export default function Commands() {
   const [isDark, setIsDark] = useState(true);
@@ -13,7 +15,6 @@ export default function Commands() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const getFullCommandPath = (cmd: Command): string => {
-    // Commands are already complete - no need to add parent paths
     return cmd.name;
   };
 
@@ -29,12 +30,10 @@ export default function Commands() {
 
   const filteredCommands = useMemo(() => {
     return Object.values(ALL_COMMANDS).filter((cmd) => {
-      // Category filter
       if (selectedCategory !== "all" && cmd.category !== selectedCategory) {
         return false;
       }
 
-      // Search filter
       if (searchTerm) {
         const fullPath = getFullCommandPath(cmd);
         const matchesSearch = 
@@ -48,7 +47,6 @@ export default function Commands() {
 
       return true;
     }).sort((a, b) => {
-      // Sort by category first, then by command name
       if (a.category !== b.category) {
         return a.category.localeCompare(b.category);
       }
@@ -59,8 +57,6 @@ export default function Commands() {
   }, [searchTerm, selectedCategory]);
 
   const totalCommands = Object.values(ALL_COMMANDS).length;
-  const totalPrefixCommands = Object.values(ALL_COMMANDS).filter(cmd => cmd.has_prefix).length;
-  const totalSlashCommands = Object.values(ALL_COMMANDS).filter(cmd => cmd.has_slash).length;
 
   const formatPermissions = (permissions: string[] = []) => {
     if (!permissions || permissions.length === 0) return "None";
@@ -102,11 +98,14 @@ export default function Commands() {
     return { summary: parts.join(', '), details };
   };
 
-  const getCommandTypes = (cmd: Command): string[] => {
-    const types = [];
-    if (cmd.has_prefix) types.push("Prefix");
-    if (cmd.has_slash) types.push("Slash");
-    return types;
+  const getCategoryIcon = (category: string) => {
+    const iconName = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || "Package";
+    const IconComponent = (Icons as any)[iconName];
+    return IconComponent || Icons.Package;
+  };
+
+  const getCategoryColor = (category: string) => {
+    return CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] || "from-gray-500 to-gray-600";
   };
 
   return (
@@ -151,40 +150,72 @@ export default function Commands() {
             </p>
           </div>
 
-          {/* Category Cards Grid */}
-          <div className="mb-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <motion.button
-              onClick={() => setSelectedCategory("all")}
-              whileHover={{ y: -4 }}
-              className={`p-4 rounded-xl text-left transition-all ${
-                selectedCategory === "all"
-                  ? isDark ? "bg-white/10 border-white/30" : "bg-black/10 border-black/30"
-                  : isDark ? "bg-gray-900/50 border-white/10 hover:border-white/30" : "bg-gray-100/50 border-black/10 hover:border-black/30"
-              } border`}
-            >
-              <div className="mb-2 inline-flex p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
-                </svg>
-              </div>
-              <h3 className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>All</h3>
-              <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>{totalCommands} commands</p>
-            </motion.button>
-            {categories.map(cat => {
-              const catCount = Object.values(ALL_COMMANDS).filter(c => c.category === cat).length;
-              return (
-                <CommandCategoryCard
-                  key={cat}
-                  category={cat}
-                  commandCount={catCount}
-                  isDark={isDark}
-                  onClick={() => setSelectedCategory(cat)}
-                />
-              );
-            })}
+          {/* Category Tabs */}
+          <div className="mb-8">
+            <div className={`flex gap-2 overflow-x-auto pb-2 scrollbar-thin ${isDark ? "scrollbar-thumb-white/20" : "scrollbar-thumb-black/20"}`}>
+              {/* All Tab */}
+              <motion.button
+                onClick={() => setSelectedCategory("all")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === "all"
+                    ? isDark 
+                      ? "bg-white/10 text-white border border-white/30" 
+                      : "bg-black/10 text-black border border-black/30"
+                    : isDark 
+                      ? "bg-gray-900/50 text-gray-400 border border-white/10 hover:border-white/30" 
+                      : "bg-gray-100/50 text-gray-600 border border-black/10 hover:border-black/30"
+                }`}
+              >
+                <Icons.Grid3x3 className="w-4 h-4" />
+                <span>All Commands</span>
+                <span className={`px-2 py-0.5 rounded-full text-xs ${
+                  selectedCategory === "all"
+                    ? isDark ? "bg-white/20" : "bg-black/20"
+                    : isDark ? "bg-white/10" : "bg-black/10"
+                }`}>
+                  {totalCommands}
+                </span>
+              </motion.button>
+
+              {/* Category Tabs */}
+              {categories.map(cat => {
+                const IconComponent = getCategoryIcon(cat);
+                const colorGradient = getCategoryColor(cat);
+                const catCount = Object.values(ALL_COMMANDS).filter(c => c.category === cat).length;
+                
+                return (
+                  <motion.button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                      selectedCategory === cat
+                        ? isDark 
+                          ? "bg-white/10 text-white border border-white/30" 
+                          : "bg-black/10 text-black border border-black/30"
+                        : isDark 
+                          ? "bg-gray-900/50 text-gray-400 border border-white/10 hover:border-white/30" 
+                          : "bg-gray-100/50 text-gray-600 border border-black/10 hover:border-black/30"
+                    }`}
+                  >
+                    <div className={`p-1 rounded bg-gradient-to-br ${colorGradient}`}>
+                      <IconComponent className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="capitalize">{cat}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs ${
+                      selectedCategory === cat
+                        ? isDark ? "bg-white/20" : "bg-black/20"
+                        : isDark ? "bg-white/10" : "bg-black/10"
+                    }`}>
+                      {catCount}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Search bar */}
@@ -215,7 +246,6 @@ export default function Commands() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {filteredCommands.map((cmd, index) => {
-              const commandTypes = getCommandTypes(cmd);
               const fullPath = getFullCommandPath(cmd);
               
               return (
@@ -231,7 +261,6 @@ export default function Commands() {
                   }}
                   className={`group relative p-5 rounded-xl ${isDark ? "bg-gradient-to-br from-gray-900/80 to-black/80 border-white/10 hover:border-white/30" : "bg-gradient-to-br from-gray-100/80 to-white/80 border-black/10 hover:border-black/30"} border transition-all duration-300 cursor-pointer overflow-hidden`}
                 >
-                  {/* Animated background gradient */}
                   <motion.div
                     className={`absolute inset-0 ${isDark ? "bg-gradient-to-br from-white/5 to-transparent" : "bg-gradient-to-br from-black/5 to-transparent"} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                     animate={{
@@ -247,16 +276,13 @@ export default function Commands() {
                       </h3>
                     </div>
 
-                    
-
-                    {/* Category Badge */}
                     <div className="mb-3">
                       <span className={`text-xs px-2 py-1 rounded-md ${isDark ? "bg-purple-500/20 border-purple-500/30 text-purple-300" : "bg-purple-500/20 border-purple-500/30 text-purple-700"} border`}>
                         {cmd.category}
                       </span>
                     </div>
 
-                  {cmd.aliases && cmd.aliases.length > 0 && (
+                    {cmd.aliases && cmd.aliases.length > 0 && (
                       <motion.div 
                         className="flex flex-wrap gap-2 mb-3"
                         initial={{ opacity: 0 }}
